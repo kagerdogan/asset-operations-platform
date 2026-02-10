@@ -1,6 +1,6 @@
 ﻿using AssetOperations.Domain.Enums;
 
-namespace AssetOperations.Domain.Common;
+namespace AssetOperations.Domain.ValueObjects;
 
 public class MaintenancePeriod
 {

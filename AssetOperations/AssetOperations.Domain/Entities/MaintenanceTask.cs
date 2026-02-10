@@ -1,12 +1,14 @@
 ﻿using AssetOperations.Domain.Enums;
-namespace AssetOperations.Domain.Common;
+using AssetOperations.Domain.ValueObjects;
+using AssetOperations.Domain.Exceptions;
+namespace AssetOperations.Domain.Entities;
 
 public class MaintenanceTask
 {
     public Guid Id { get; private set; }
     public Guid AssetId { get; private set; }
     public string Title { get; private set; } = default!;
-    public string Instruction { get; set; }
+    public string Instruction { get; private set; } = default!;
     public MaintenancePeriodType Type { get; private set; }
     public MaintenancePeriod? Period { get; private set; }
 
@@ -35,7 +37,7 @@ public class MaintenanceTask
     // When Necessary bakım
     public static MaintenanceTask CreateWhenNecessary(
         Guid assetId,
-        string title,string instruction)
+        string title, string instruction)
     {
         return new MaintenanceTask
         {
@@ -49,24 +51,26 @@ public class MaintenanceTask
         };
     }
 
-    public MaintenanceStatus GetStatus(DateTime now)
+    public MaintenanceStatus GetStatus(DateTime now, TimeSpan dueWindow)
     {
         if (Type == MaintenancePeriodType.WhenNecessary)
             return MaintenanceStatus.Normal;
 
         if (Period is null || LastCompletedAt is null)
-            throw new InvalidOperationException("Periodic maintenance must have period and last completion date.");
+            throw new InvalidMaintenanceStateException(
+                "Periodic maintenance must have period and last completion date."
+            );
 
         var dueDate = Period.AddTo(LastCompletedAt.Value);
 
-        if (now.Date > dueDate.Date)
+        if (now > dueDate)
             return MaintenanceStatus.Overdue;
 
-        if (now.Date == dueDate.Date)
-            return MaintenanceStatus.Due;
-
-        return MaintenanceStatus.Normal;
-
+        return (dueDate - now) <= dueWindow
+            ? MaintenanceStatus.Due
+            : MaintenanceStatus.Normal;
     }
+
+
 
 }
