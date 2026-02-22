@@ -18,9 +18,13 @@ This project follows:
 
 Layered structure:
 src/
+
 ├── AssetOperations.Domain
+
 ├── AssetOperations.Application
+
 ├── AssetOperations.Infrastructure
+
 └── AssetOperations.Api
 
 
