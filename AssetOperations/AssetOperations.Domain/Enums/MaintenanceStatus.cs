@@ -11,6 +11,7 @@ namespace AssetOperations.Domain.Enums
     {
         Normal = 1,
         Due = 2,
-        Overdue = 3
+        Overdue = 3,
+        Deactive = 4
     }
 }

@@ -13,9 +13,13 @@ public sealed class GetMaintenanceStatusUseCase
         _duePolicy = duePolicy;
     }
 
-    public MaintenanceStatus Execute(MaintenanceTask maintenance, DateTime now)
+    public MaintenanceStatus Execute(MaintenanceTask maintenance,DateTime now,int currentRunningHour)
     {
         var dueWindow = _duePolicy.CalculateDueWindow(maintenance);
-        return maintenance.GetStatus(now, dueWindow);
+
+        return maintenance.GetStatus(
+            now,
+            currentRunningHour,
+            dueWindow);
     }
 }
